@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Empleados</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{fragments :: navbar}"></div>
+
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h1 class="h3 mb-0">Empleados</h1>
+        <a class="btn btn-primary" sec:authorize="hasRole('ADMIN')"
+           th:href="@{/empleados/nuevo(departamentoId=${departamentoId})}">Nuevo empleado</a>
+    </div>
+
+    <div th:replace="~{fragments :: alertas}"></div>
+
+    <form class="row g-2 mb-3" th:action="@{/empleados}" method="get">
+        <div class="col-auto">
+            <select class="form-select" name="departamentoId">
+                <option value="">Todos los departamentos</option>
+                <option th:each="d : ${departamentos}"
+                        th:value="${d.id}"
+                        th:text="${d.nombre}"
+                        th:selected="${departamentoId != null and departamentoId == d.id}">Departamento</option>
+            </select>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-primary">Filtrar</button>
+        </div>
+    </form>
+
+    <p th:if="${#lists.isEmpty(empleados)}">No hay empleados para mostrar.</p>
+
+    <table class="table table-striped align-middle" th:unless="${#lists.isEmpty(empleados)}">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Cédula</th>
+                <th>Correo</th>
+                <th>Puesto</th>
+                <th class="text-end">Salario</th>
+                <th>Ingreso</th>
+                <th>Departamento</th>
+                <th sec:authorize="hasRole('ADMIN')">Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="e : ${empleados}">
+                <td th:text="${e.nombre}">Nombre</td>
+                <td th:text="${e.cedula}">000000000</td>
+                <td th:text="${e.email}">correo</td>
+                <td th:text="${e.puesto.etiqueta}">Puesto</td>
+                <td class="text-end"
+                    th:text="'₡' + ${#numbers.formatDecimal(e.salario, 1, 'POINT', 2, 'COMMA')}">₡0,00</td>
+                <td th:text="${#temporals.format(e.fechaIngreso, 'dd/MM/yyyy')}">01/01/2024</td>
+                <td th:text="${e.departamento.nombre}">Departamento</td>
+                <td sec:authorize="hasRole('ADMIN')">
+                    <a class="btn btn-sm btn-outline-secondary"
+                       th:href="@{/empleados/{id}/editar(id=${e.id})}">Editar</a>
+                    <form class="d-inline" th:action="@{/empleados/{id}/eliminar(id=${e.id})}" method="post"
+                          onsubmit="return confirm('¿Eliminar este empleado?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

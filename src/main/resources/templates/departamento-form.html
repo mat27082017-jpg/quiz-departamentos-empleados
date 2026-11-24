@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Departamento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div th:replace="~{fragments :: navbar}"></div>
+
+<div class="container" style="max-width: 500px;">
+    <h1 class="h3 mb-3"
+        th:text="${departamento.id == null} ? 'Nuevo departamento' : 'Editar departamento'">Departamento</h1>
+
+    <div th:replace="~{fragments :: alertas}"></div>
+
+    <form th:action="${departamento.id == null} ? @{/departamentos/guardar} : @{/departamentos/{id}/actualizar(id=${departamento.id})}"
+          th:object="${departamento}" method="post">
+
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" class="form-control" th:field="*{nombre}">
+            <div class="text-danger small" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Ubicación</label>
+            <input type="text" class="form-control" th:field="*{ubicacion}">
+            <div class="text-danger small" th:if="${#fields.hasErrors('ubicacion')}" th:errors="*{ubicacion}"></div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Presupuesto</label>
+            <input type="number" step="0.01" min="0" class="form-control" th:field="*{presupuesto}">
+            <div class="text-danger small" th:if="${#fields.hasErrors('presupuesto')}" th:errors="*{presupuesto}"></div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Guardar</button>
+        <a class="btn btn-outline-secondary" th:href="@{/departamentos}">Cancelar</a>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
